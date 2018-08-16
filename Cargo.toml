@@ -1,0 +1,6 @@
+[package]
+name = "dns_client"
+version = "0.1.0"
+authors = ["blake <blake@parsed.uk>"]
+
+[dependencies]
