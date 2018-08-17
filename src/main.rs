@@ -1,12 +1,14 @@
 mod bits;
 mod header;
+mod question;
+mod maker;
 
 use std::thread;
 use std::net;
-use std::time::Duration;
-use std::net::{ UdpSocket, SocketAddr };
 
-use header::Header;
+use question::Question;
+use header::{ Header, HEADER_SIZE };
+use maker::Maker;
 
 fn main() -> std::io::Result<()> {
     println!("UDP");
@@ -14,8 +16,7 @@ fn main() -> std::io::Result<()> {
     let me = "0.0.0.0:53123";
     let target_dns = "1.1.1.1:53";
 
-    let socket = UdpSocket::bind(me).expect("Cant bind host address");
-    socket.set_read_timeout(Some(Duration::from_millis(2000)))?;
+    let mut maker = Maker::new(me, target_dns).unwrap();
 
     println!("Sending handshake!");
 
@@ -28,25 +29,22 @@ fn main() -> std::io::Result<()> {
         recursion_desired: false,
         recursion_available: false,
         response_code: 0,
-        questions: 0,
+        questions: 1,
         answers: 0,
         nameservers: 0,
         additional_records: 0
     };
 
+    let mut question = Question::new("www.google.com");
+
     let mut msg_buf = [0; 4096];
 
     //Write the header to the buffer start
     header.write(&mut msg_buf);
-    println!("Send: {:?}", &header);
-    println!("Send {:?}", &msg_buf[0..12]);
+    let size = question.write(&mut msg_buf[HEADER_SIZE..]);
 
-    //Send the message
-    socket.send_to(&msg_buf[0..12], target_dns).expect("Cant send data");
-
-    //Recv the message
-    let (amt, src) = socket.recv_from(&mut msg_buf)?;
-    println!("RCV: {:?}", &msg_buf[0..amt]);
+    maker.send(&msg_buf[0..HEADER_SIZE + size])?; 
+    let amt = maker.recv(&mut msg_buf)?;
 
     //Read it into the header
     header.read(&msg_buf);
