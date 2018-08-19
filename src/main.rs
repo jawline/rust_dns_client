@@ -43,13 +43,18 @@ fn main() -> std::io::Result<()> {
     header.write(&mut msg_buf);
     let size = question.write(&mut msg_buf[HEADER_SIZE..]);
 
+    println!("Send: {:?}", header);
+    println!("Send: {:?}", question);
+
     maker.send(&msg_buf[0..HEADER_SIZE + size])?; 
     let amt = maker.recv(&mut msg_buf)?;
 
     //Read it into the header
     header.read(&msg_buf);
+    let mut current = HEADER_SIZE + question.read(&msg_buf[HEADER_SIZE..]);
 
     println!("Recv: {:?}", &header);
+    println!("Recv: {:?}", &question);
 
     Ok(())
 }
