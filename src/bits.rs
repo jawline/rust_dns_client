@@ -1,11 +1,17 @@
 use std::str;
 
-pub fn extract_u16(data: &[u8], offset: usize) -> u16 {
-    (data[offset + 1] as u16) + ((data[offset] as u16) << 8)
+pub fn extract_u16(data: &[u8], offset: usize) -> Result<u16, String> {
+    if data.len() > offset + 2 {
+        Ok((data[offset + 1] as u16) + ((data[offset] as u16) << 8))
+    } else {
+        Err("no data".to_string())
+    }
 }
 
-pub fn extract_u32(data: &[u8], offset: usize) -> u32 {
-    extract_u16(data, offset + 2) as u32 + ((extract_u16(data, offset) as u32) << 16)
+pub fn extract_u32(data: &[u8], offset: usize) -> Result<u32, String> {
+    let lo = extract_u16(data, offset + 2)? as u32;
+    let hi = (extract_u16(data, offset)? as u32) << 16;
+    Ok(lo + hi)
 }
 
 pub fn set_bitfield(data: &mut u16, val: u16, field: u16, offset: usize) {

@@ -57,8 +57,8 @@ impl Question {
         let (words, mut cur) = extract_string(data, 0)?;
         
         self.portions = words;
-        self.type_code = extract_u16(data, cur);
-        self.class_code = extract_u16(data, cur + 2);
+        self.type_code = extract_u16(data, cur)?;
+        self.class_code = extract_u16(data, cur + 2)?;
 
         cur += 4;
         

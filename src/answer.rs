@@ -19,7 +19,7 @@ impl Answer {
     pub fn extract(data: &[u8], current: usize) -> Result<(Answer, usize), String> {
 
         //Grab the first 16 bits of the answer to decide if its a ptr
-        let ptr = extract_u16(data, current);
+        let ptr = extract_u16(data, current)?;
 
         let (names, current) = if (ptr & PTR_BITS != 1) { //Names is a ptr
             let start = ptr & !PTR_BITS;
@@ -29,10 +29,10 @@ impl Answer {
             extract_string(data, current)?
         };
 
-        let type_code = extract_u16(data, current);
-        let class_code = extract_u16(data, current + 2);
-        let ttl = extract_u32(data, current + 4);
-        let rdlength = extract_u16(data, current + 8);
+        let type_code = extract_u16(data, current)?;
+        let class_code = extract_u16(data, current + 2)?;
+        let ttl = extract_u32(data, current + 4)?;
+        let rdlength = extract_u16(data, current + 8)?;
         let record = Record::from(type_code, &data[current + 10..])?;
 
         Ok((Answer {

@@ -88,10 +88,10 @@ impl Header {
         set_u16(data, AR_OFFSET, self.additional_records);
     }
 
-    pub fn read(&mut self, data: &[u8]) {
-        self.id = extract_u16(data, ID_OFFSET);
+    pub fn read(&mut self, data: &[u8]) -> Result<(), String> {
+        self.id = extract_u16(data, ID_OFFSET)?;
 
-        let data_row = extract_u16(data, DATA_OFFSET);
+        let data_row = extract_u16(data, DATA_OFFSET)?;
 
         self.opcode = extract_bitfield(data_row, OPCODE_BITS, OPCODE_OFFSET) as u8;
         self.response = get_bit(data_row, RESPONSE_BIT);
@@ -101,10 +101,12 @@ impl Header {
         self.recursion_available = get_bit(data_row, RA_BIT);
         self.response_code = extract_bitfield(data_row, Z_BITS, Z_OFFSET) as u8;
 
-        self.questions = extract_u16(data, QD_OFFSET);
-        self.answers = extract_u16(data, AN_OFFSET);
-        self.nameservers = extract_u16(data, NS_OFFSET);
-        self.additional_records = extract_u16(data, AR_OFFSET);
+        self.questions = extract_u16(data, QD_OFFSET)?;
+        self.answers = extract_u16(data, AN_OFFSET)?;
+        self.nameservers = extract_u16(data, NS_OFFSET)?;
+        self.additional_records = extract_u16(data, AR_OFFSET)?;
+        
+        Ok(())
     }
 
     pub fn from(data: &[u8]) -> Header {
