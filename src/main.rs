@@ -3,6 +3,7 @@ mod header;
 mod question;
 mod maker;
 mod answer;
+mod record;
 
 use std::thread;
 use std::net;
