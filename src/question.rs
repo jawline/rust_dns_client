@@ -69,7 +69,7 @@ impl Question {
                 break;
             }
 
-            let word = str::from_utf8(&data[0..cur]).unwrap().to_string();
+            let word = str::from_utf8(&data[cur..cur + len as usize]).unwrap().to_string();
             cur += len as usize;
 
             words.push(word);
