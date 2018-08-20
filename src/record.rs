@@ -18,12 +18,12 @@ pub enum Record {
 
 impl Record { 
 
-    pub fn from(type_code: u16, data: &[u8]) -> Result<Record, ()> {
+    pub fn from(type_code: u16, data: &[u8]) -> Result<Record, String> {
         match type_code {
             A_CODE => if data.len() >= 4 {
                 Ok(Record::A(Ipv4Addr::new(data[0], data[1], data[2], data[3])))
-            } else { Err(()) },
-            _ => Err(())
+            } else { Err("a record no data".to_string()) },
+            _ => Err( "unknown type code".to_string() )
         } 
     }
 

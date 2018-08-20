@@ -54,7 +54,7 @@ fn main() -> std::io::Result<()> {
 
     //Read it into the header
     header.read(&msg_buf);
-    let mut current = HEADER_SIZE + question.read(&msg_buf[HEADER_SIZE..]);
+    let mut current = HEADER_SIZE + question.read(&msg_buf[HEADER_SIZE..]).unwrap();
     let answer = Answer::extract(&msg_buf, current);
 
     println!("Recv: {:?}", &header);

@@ -35,7 +35,12 @@ pub fn get_bit(v: u16, bit: u16) -> bool {
     v & bit != 0
 }
 
-pub fn extract_string(data: &[u8], current: usize) -> (Vec<String>, usize) {
+pub fn extract_string(data: &[u8], current: usize) -> Result<(Vec<String>, usize), String> {
+
+    if (current >= data.len()) {
+        return Err("no more data".to_string())
+    }
+
     let mut words = Vec::new();
     let mut cur = current;
 
@@ -54,5 +59,5 @@ pub fn extract_string(data: &[u8], current: usize) -> (Vec<String>, usize) {
         words.push(word);
     }
     
-    (words, cur)
+    Ok((words, cur))
 }

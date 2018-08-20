@@ -52,16 +52,17 @@ impl Question {
         current
     }
 
-    pub fn read(&mut self, data: &[u8]) -> usize {
+    pub fn read(&mut self, data: &[u8]) -> Result<usize, String> {
 
-        let (words, mut cur) = extract_string(data, 0);
+        let (words, mut cur) = extract_string(data, 0)?;
         
         self.portions = words;
         self.type_code = extract_u16(data, cur);
         self.class_code = extract_u16(data, cur + 2);
 
         cur += 4;
-        cur
+        
+        Ok(cur)
     }
 
 }
