@@ -38,7 +38,7 @@ fn main() -> std::io::Result<()> {
         additional_records: 0
     };
 
-    let mut question = Question::new("www.google.com");
+    let mut question = Question::new(&std::env::args().last().unwrap());
 
     let mut msg_buf = [0; 4096];
 

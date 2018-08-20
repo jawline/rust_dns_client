@@ -1,3 +1,4 @@
+use bits::*;
 use std::net::{ IpAddr, Ipv4Addr };
 
 pub const A_CODE: u16 = 0x1;
@@ -13,17 +14,26 @@ pub const ANY_CODE: u16 = 0xFF;
 
 #[derive(Debug)]
 pub enum Record {
-    A(Ipv4Addr)
+    A(Ipv4Addr),
+    CNAME(Vec<String>)
 }
 
 impl Record { 
 
-    pub fn from(type_code: u16, data: &[u8]) -> Result<Record, String> {
+    pub fn from(type_code: u16, data: &[u8], current: usize) -> Result<Record, String> {
         match type_code {
-            A_CODE => if data.len() >= 4 {
-                Ok(Record::A(Ipv4Addr::new(data[0], data[1], data[2], data[3])))
+
+            A_CODE => if data.len() >= current + 4 {
+                Ok(Record::A(Ipv4Addr::new(data[current], data[current + 1], data[current + 2], data[current + 3])))
             } else { Err("a record no data".to_string()) },
-            _ => Err( "unknown type code".to_string() )
+
+            CNAME_CODE => {
+                println!("{:x?}", &data);
+                let (name, _) = extract_string_maybe_ptr(data, current)?;
+                Ok(Record::CNAME(name))
+            },
+
+            _ => Err( format!("unknown type code {}", type_code) )
         } 
     }
 
