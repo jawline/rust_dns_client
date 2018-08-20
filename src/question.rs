@@ -54,7 +54,7 @@ impl Question {
 
     pub fn read(&mut self, data: &[u8]) -> usize {
 
-        let (words, mut cur) = extract_string(data);
+        let (words, mut cur) = extract_string(data, 0);
         
         self.portions = words;
         self.type_code = extract_u16(data, cur);

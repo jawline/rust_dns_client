@@ -35,9 +35,9 @@ pub fn get_bit(v: u16, bit: u16) -> bool {
     v & bit != 0
 }
 
-pub fn extract_string(data: &[u8]) -> (Vec<String>, usize) {
+pub fn extract_string(data: &[u8], current: usize) -> (Vec<String>, usize) {
     let mut words = Vec::new();
-    let mut cur = 0;
+    let mut cur = current;
 
     loop {
 
