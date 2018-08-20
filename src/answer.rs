@@ -1,8 +1,9 @@
 use bits::*;
+use std::net::{ IpAddr, Ipv4Addr };
 
 #[derive(Debug)]
 pub enum RData {
-    A(u32)
+    A(Ipv4Addr)
 }
 
 #[derive(Debug)]
@@ -19,7 +20,7 @@ const PTR_BITS: u16 = (1 << 14) | (1 << 15);
 
 fn extract_rdata(type_code: u16, class_code: u16, data: &[u8]) -> Option<RData> {
     if type_code == 1 {
-        Some(RData::A(extract_u32(data, 0)))
+        Some(RData::A(Ipv4Addr::new(data[0], data[1], data[2], data[3])))
     } else {
         None
     }
