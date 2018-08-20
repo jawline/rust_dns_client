@@ -51,15 +51,26 @@ fn main() -> std::io::Result<()> {
 
     maker.send(&msg_buf[0..HEADER_SIZE + size])?; 
     let amt = maker.recv(&mut msg_buf)?;
+    let msg_buf = &msg_buf[0..amt];
 
     //Read it into the header
     header.read(&msg_buf);
-    let mut current = HEADER_SIZE + question.read(&msg_buf[HEADER_SIZE..]).unwrap();
-    let answer = Answer::extract(&msg_buf, current);
+
+    let mut current = HEADER_SIZE;
 
     println!("Recv: {:?}", &header);
-    println!("Recv: {:?}", &question);
-    println!("Recv: {:?}", &answer);
+
+    for i in 0..header.questions {
+        current = question.read(&msg_buf, current).unwrap();
+        println!("Recv: {:?}", &question);
+    }
+
+    for i in 0..header.answers {
+        let (answer, nc) = Answer::extract(&msg_buf, current).unwrap();
+        current = nc;
+        println!("Recv: {:?}", &answer);
+    }
+
 
     Ok(())
 }

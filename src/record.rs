@@ -28,7 +28,6 @@ impl Record {
             } else { Err("a record no data".to_string()) },
 
             CNAME_CODE => {
-                println!("{:x?}", &data);
                 let (name, _) = extract_string_maybe_ptr(data, current)?;
                 Ok(Record::CNAME(name))
             },
