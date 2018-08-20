@@ -43,7 +43,6 @@ impl Question {
         data[current] = 0;
         current += 1;
 
-
         set_u16(data, current, self.type_code);
         current += 2;
 

@@ -54,9 +54,11 @@ fn main() -> std::io::Result<()> {
     //Read it into the header
     header.read(&msg_buf);
     let mut current = HEADER_SIZE + question.read(&msg_buf[HEADER_SIZE..]);
+    let (answer, current) = Answer::extract(&msg_buf[current..]);
 
     println!("Recv: {:?}", &header);
     println!("Recv: {:?}", &question);
+    println!("Recv: {:?}", &answer);
 
     Ok(())
 }

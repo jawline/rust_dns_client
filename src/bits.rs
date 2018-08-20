@@ -4,6 +4,10 @@ pub fn extract_u16(data: &[u8], offset: usize) -> u16 {
     (data[offset + 1] as u16) + ((data[offset] as u16) << 8)
 }
 
+pub fn extract_u32(data: &[u8], offset: usize) -> u32 {
+    extract_u16(data, offset + 2) as u32 + ((extract_u16(data, offset) as u32) << 16)
+}
+
 pub fn set_bitfield(data: &mut u16, val: u16, field: u16, offset: usize) {
     let to_set = (val << offset) & field;
     let remain = *data & !field;
