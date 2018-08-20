@@ -14,7 +14,7 @@ pub struct Answer {
 
 impl Answer {
 
-    pub fn extract(data: &[u8], current: usize) -> Result<(Answer, usize), String> {
+    pub fn from(data: &[u8], current: usize) -> Result<(Answer, usize), String> {
 
         let (names, current) = extract_string_maybe_ptr(data, current)?;
         let type_code = extract_u16(data, current)?;

@@ -109,10 +109,10 @@ impl Header {
         Ok(())
     }
 
-    pub fn from(data: &[u8]) -> Header {
+    pub fn from(data: &[u8], current: usize) -> Result<(Header, usize), String> {
         let mut header = Header::blank();
-        header.read(data);
-        header
+        header.read(&data[current..])?;
+        Ok((header, HEADER_SIZE))
     }
 
 }

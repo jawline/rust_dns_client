@@ -53,20 +53,19 @@ fn main() -> std::io::Result<()> {
     let amt = maker.recv(&mut msg_buf)?;
     let msg_buf = &msg_buf[0..amt];
 
-    //Read it into the header
-    header.read(&msg_buf);
-
-    let mut current = HEADER_SIZE;
+    //Process the response
+    let (header, mut current) = Header::from(&msg_buf, 0).unwrap();
 
     println!("Recv: {:?}", &header);
 
     for i in 0..header.questions {
-        current = question.read(&msg_buf, current).unwrap();
+        let (question, nc) = Question::from(&msg_buf, current).unwrap();
+        current = nc;
         println!("Recv: {:?}", &question);
     }
 
     for i in 0..header.answers {
-        let (answer, nc) = Answer::extract(&msg_buf, current).unwrap();
+        let (answer, nc) = Answer::from(&msg_buf, current).unwrap();
         current = nc;
         println!("Recv: {:?}", &answer);
     }
