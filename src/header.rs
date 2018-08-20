@@ -49,6 +49,23 @@ pub struct Header {
 
 impl Header {
 
+    pub fn blank() -> Header {
+        Header {
+            id: 0,
+            response: false,
+            opcode: 0,
+            authorative_answer: false,
+            truncated: false,
+            recursion_desired: false,
+            recursion_available: false,
+            response_code: 0,
+            questions: 0,
+            answers: 0,
+            nameservers: 0,
+            additional_records: 0
+        }
+    }
+
     pub fn write(&self, data: &mut [u8]) {
         set_u16(data, ID_OFFSET, self.id);
         
@@ -88,6 +105,12 @@ impl Header {
         self.answers = extract_u16(data, AN_OFFSET);
         self.nameservers = extract_u16(data, NS_OFFSET);
         self.additional_records = extract_u16(data, AR_OFFSET);
+    }
+
+    pub fn from(data: &[u8]) -> Header {
+        let mut header = Header::blank();
+        header.read(data);
+        header
     }
 
 }

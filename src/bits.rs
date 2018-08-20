@@ -1,3 +1,5 @@
+use std::str;
+
 pub fn extract_u16(data: &[u8], offset: usize) -> u16 {
     (data[offset + 1] as u16) + ((data[offset] as u16) << 8)
 }
@@ -27,4 +29,26 @@ pub fn set_bit(v: &mut u16, cnd: bool, bit: u16) {
 
 pub fn get_bit(v: u16, bit: u16) -> bool {
     v & bit != 0
+}
+
+pub fn extract_string(data: &[u8]) -> (Vec<String>, usize) {
+    let mut words = Vec::new();
+    let mut cur = 0;
+
+    loop {
+
+        let len = data[cur];
+        cur += 1;
+
+        if len == 0 {
+            break;
+        }
+
+        let word = str::from_utf8(&data[cur..cur + len as usize]).unwrap().to_string();
+        cur += len as usize;
+
+        words.push(word);
+    }
+    
+    (words, cur)
 }

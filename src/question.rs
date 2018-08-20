@@ -1,4 +1,3 @@
-use std::str;
 use bits::*;
 
 #[derive(Debug)]
@@ -56,31 +55,13 @@ impl Question {
 
     pub fn read(&mut self, data: &[u8]) -> usize {
 
-        let mut words = Vec::new();
-
-        let mut cur = 0;
-
-        loop {
-
-            let len = data[cur];
-            cur += 1;
-
-            if len == 0 {
-                break;
-            }
-
-            let word = str::from_utf8(&data[cur..cur + len as usize]).unwrap().to_string();
-            cur += len as usize;
-
-            words.push(word);
-        }
-
+        let (words, mut cur) = extract_string(data);
+        
         self.portions = words;
         self.type_code = extract_u16(data, cur);
         self.class_code = extract_u16(data, cur + 2);
 
         cur += 4;
-
         cur
     }
 

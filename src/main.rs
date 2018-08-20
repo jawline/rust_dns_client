@@ -2,6 +2,7 @@ mod bits;
 mod header;
 mod question;
 mod maker;
+mod answer;
 
 use std::thread;
 use std::net;
@@ -9,6 +10,7 @@ use std::net;
 use question::Question;
 use header::{ Header, HEADER_SIZE };
 use maker::Maker;
+use answer::Answer;
 
 fn main() -> std::io::Result<()> {
     println!("UDP");
