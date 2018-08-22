@@ -1,4 +1,5 @@
 use bits::*;
+use record;
 
 #[derive(Debug)]
 pub struct Question {
@@ -9,7 +10,7 @@ pub struct Question {
 
 impl Question {
 
-    pub fn new(domain: &str) -> Question {
+    pub fn new(domain: &str, type_code: u16) -> Question {
         let mut portions = Vec::new();        
 
         for s in domain.split(".") {
@@ -18,13 +19,13 @@ impl Question {
 
         Question {
             portions: portions,
-            type_code: 1,
+            type_code: type_code,
             class_code: 1
         } 
     }
 
-    pub fn write(&self, data: &mut [u8]) -> usize {
-        let mut current = 0;
+    pub fn write(&self, data: &mut [u8], current: usize) -> usize {
+        let mut current = current;
 
         for portion in &self.portions {
 
@@ -53,8 +54,7 @@ impl Question {
     }
 
     pub fn from(data: &[u8], current: usize) -> Result<(Question, usize), String> {
-
-        let (words, mut current) = extract_string(data, current)?;
+        let (words, current) = extract_string(data, current)?;
         let type_code = extract_u16(data, current)?;
         let class_code = extract_u16(data, current + 2)?;
         

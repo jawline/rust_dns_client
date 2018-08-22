@@ -3,11 +3,19 @@ use std::str;
 const PTR_BITS: u16 = (1 << 14) | (1 << 15);
 
 pub fn extract_u16(data: &[u8], offset: usize) -> Result<u16, String> {
-    if data.len() > offset + 2 {
+    if data.len() >= offset + 2 {
         Ok((data[offset + 1] as u16) + ((data[offset] as u16) << 8))
     } else {
         Err("no data".to_string())
     }
+}
+
+pub fn set_u16(data: &mut [u8], offset: usize, v: u16) {
+    let lo = v & 0xFF;
+    let hi = (v >> 8) & 0xFF;
+
+    data[offset + 1] = lo as u8;
+    data[offset] = hi as u8;
 }
 
 pub fn extract_u32(data: &[u8], offset: usize) -> Result<u32, String> {
@@ -24,11 +32,6 @@ pub fn set_bitfield(data: &mut u16, val: u16, field: u16, offset: usize) {
 
 pub fn extract_bitfield(data: u16, field: u16, offset: usize) -> u16 {
     (data & field) >> offset
-}
-
-pub fn set_u16(data: &mut [u8], offset: usize, v: u16) {
-    data[offset + 1] = (v & 0xFF) as u8;
-    data[offset] = ((v >> 8) & 0xFF) as u8;
 }
 
 pub fn set_bit(v: &mut u16, cnd: bool, bit: u16) {
