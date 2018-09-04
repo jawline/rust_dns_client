@@ -54,12 +54,17 @@ fn response(buf: &mut [u8], maker: &Maker) -> std::io::Result<()> {
 }
 
 fn main() -> std::io::Result<()> {
-    println!("UDP");
 
-    let me = "0.0.0.0:53123";
-    let target_dns = "1.1.1.1:53";
+    let me = "0.0.0.0:0";
+    let target_dns = format!("{}:53", std::env::args().nth(1).unwrap());
+    let search_target = std::env::args().nth(2).unwrap();
 
-    let mut maker = Maker::new(me, target_dns).unwrap();
+    println!("DNS Lookup Utility");
+    println!("Bind: {}", me);
+    println!("Target: {}", target_dns);
+    println!("Search Target: {}", search_target);
+
+    let mut maker = Maker::new(me, &target_dns).unwrap();
     let mut question = Question::new(&std::env::args().last().unwrap(), record::A_CODE);
 
     let mut msg_buf = [0; 65536];
