@@ -57,6 +57,7 @@ fn main() -> std::io::Result<()> {
 
     if std::env::args().len() != 3 {
         println!("Usage: {} DNS_SERVER WEBSITE", std::env::args().nth(0).unwrap());
+        return Ok(())
     }
 
     let me = "0.0.0.0:0";
