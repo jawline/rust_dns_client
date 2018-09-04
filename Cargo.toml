@@ -4,3 +4,4 @@ version = "0.1.0"
 authors = ["blake <blake@parsed.uk>"]
 
 [dependencies]
+log = "0.4.5"

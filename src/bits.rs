@@ -51,7 +51,7 @@ pub fn extract_string_maybe_ptr(data: &[u8], current: usize) -> Result<(Vec<Stri
     //Grab the first 16 bits of the answer to decide if its a ptr
     let ptr = extract_u16(data, current)?;
 
-    if (ptr & PTR_BITS != 1) { //Names is a ptr
+    if ptr & PTR_BITS != 1 { //Names is a ptr
         let start = ptr & !PTR_BITS;
         let (names, _) = extract_string(data, start as usize)?;
         Ok((names, current + 2))
@@ -63,7 +63,7 @@ pub fn extract_string_maybe_ptr(data: &[u8], current: usize) -> Result<(Vec<Stri
 
 pub fn extract_string(data: &[u8], current: usize) -> Result<(Vec<String>, usize), String> {
 
-    if (current >= data.len()) {
+    if current >= data.len() {
         return Err("no more data".to_string())
     }
 

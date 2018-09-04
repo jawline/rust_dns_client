@@ -1,5 +1,4 @@
 use bits::*;
-use record;
 
 #[derive(Debug)]
 pub struct Question {

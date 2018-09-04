@@ -1,5 +1,7 @@
-use std;
-use std::net::{ UdpSocket, SocketAddr };
+use log::*;
+
+use std::io::Error;
+use std::net::UdpSocket;
 use std::time::Duration;
 
 pub struct Maker {
@@ -9,7 +11,7 @@ pub struct Maker {
 
 impl Maker {
 
-    pub fn new(src: &str, tgt: &str) -> Result<Maker, std::io::Error> {
+    pub fn new(src: &str, tgt: &str) -> Result<Maker, Error> {
 
         let socket = UdpSocket::bind(src)?;
         socket.set_read_timeout(Some(Duration::from_millis(2000)))?;
@@ -20,14 +22,14 @@ impl Maker {
         })
     }
 
-    pub fn send(&self, msg: &[u8]) -> Result<usize, std::io::Error> {
-        println!("Send {} bytes {:x?}", msg.len(), msg);
+    pub fn send(&self, msg: &[u8]) -> Result<usize, Error> {
+        debug!("Send {} bytes {:x?}", msg.len(), msg);
         self.socket.send_to(msg, &self.target)
     }
 
-    pub fn recv(&self, buf: &mut [u8]) -> Result<usize, std::io::Error> {
+    pub fn recv(&self, buf: &mut [u8]) -> Result<usize, Error> {
         let amt = self.socket.recv(buf)?;
-        println!("Recv {} bytes {:x?}", amt, &buf[0..amt]);
+        debug!("Recv {} bytes {:x?}", amt, &buf[0..amt]);
         Ok(amt)
     }
 

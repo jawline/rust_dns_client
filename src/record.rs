@@ -1,5 +1,5 @@
 use bits::*;
-use std::net::{ IpAddr, Ipv4Addr };
+use std::net::Ipv4Addr;
 
 pub const A_CODE: u16 = 0x1;
 pub const NS_CODE: u16 = 0x2;

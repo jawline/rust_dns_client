@@ -1,12 +1,12 @@
+#[macro_use]
+extern crate log;
+
 mod bits;
 mod header;
 mod question;
 mod maker;
 mod answer;
 mod record;
-
-use std::thread;
-use std::net;
 
 use question::Question;
 use header::{ Header, HEADER_SIZE };
@@ -20,13 +20,13 @@ pub fn print_response(buf: &[u8]) -> Result<(), String> {
 
     println!("Recv: {:?} {}", &header, current);
 
-    for i in 0..header.questions {
+    for _ in 0..header.questions {
         let (question, nc) = Question::from(buf, current)?;
         current = nc;
         println!("Recv: {:?}", &question);
     }
 
-    for i in 0..header.answers {
+    for _ in 0..header.answers {
         let (answer, nc) = Answer::from(buf, current)?;
         current = nc;
         println!("Recv: {:?}", &answer);
@@ -55,6 +55,10 @@ fn response(buf: &mut [u8], maker: &Maker) -> std::io::Result<()> {
 
 fn main() -> std::io::Result<()> {
 
+    if std::env::args().len() != 3 {
+        println!("Usage: {} DNS_SERVER WEBSITE", std::env::args().nth(0).unwrap());
+    }
+
     let me = "0.0.0.0:0";
     let target_dns = format!("{}:53", std::env::args().nth(1).unwrap());
     let search_target = std::env::args().nth(2).unwrap();
@@ -64,8 +68,8 @@ fn main() -> std::io::Result<()> {
     println!("Target: {}", target_dns);
     println!("Search Target: {}", search_target);
 
-    let mut maker = Maker::new(me, &target_dns).unwrap();
-    let mut question = Question::new(&std::env::args().last().unwrap(), record::A_CODE);
+    let maker = Maker::new(me, &target_dns).unwrap();
+    let question = Question::new(&std::env::args().last().unwrap(), record::A_CODE);
 
     let mut msg_buf = [0; 65536];
 

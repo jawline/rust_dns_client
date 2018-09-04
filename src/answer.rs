@@ -1,5 +1,4 @@
 use bits::*;
-use std::net::{ IpAddr, Ipv4Addr };
 use record::Record;
 
 #[derive(Debug)]
