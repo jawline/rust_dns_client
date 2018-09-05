@@ -53,16 +53,26 @@ fn response(buf: &mut [u8], maker: &Maker) -> std::io::Result<()> {
     Ok(())
 }
 
+fn map_str_to_class_code(s: &str) -> Option<u16> {
+    match s {
+        "A" => Some(record::A_CODE),
+        "NS" => Some(record::NS_CODE),
+        "CNAME" => Some(record::CNAME_CODE),
+        _ => None
+    }
+}
+
 fn main() -> std::io::Result<()> {
 
-    if std::env::args().len() != 3 {
-        println!("Usage: {} DNS_SERVER WEBSITE", std::env::args().nth(0).unwrap());
+    if std::env::args().len() != 4 {
+        println!("Usage: {} DNS_SERVER WEBSITE CLASSNAME", std::env::args().nth(0).unwrap());
         return Ok(())
     }
 
     let me = "0.0.0.0:0";
     let target_dns = format!("{}:53", std::env::args().nth(1).unwrap());
     let search_target = std::env::args().nth(2).unwrap();
+    let class_code = map_str_to_class_code(&std::env::args().nth(3).unwrap()).unwrap();
 
     println!("DNS Lookup Utility");
     println!("Bind: {}", me);
@@ -70,7 +80,7 @@ fn main() -> std::io::Result<()> {
     println!("Search Target: {}", search_target);
 
     let maker = Maker::new(me, &target_dns).unwrap();
-    let question = Question::new(&std::env::args().last().unwrap(), record::A_CODE);
+    let question = Question::new(&search_target, class_code);
 
     let mut msg_buf = [0; 65536];
 

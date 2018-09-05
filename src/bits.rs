@@ -58,7 +58,6 @@ pub fn extract_string_maybe_ptr(data: &[u8], current: usize) -> Result<(Vec<Stri
     } else { //names is grabbed with the extract_string function
         extract_string(data, current)
     }
-
 }
 
 pub fn extract_string(data: &[u8], current: usize) -> Result<(Vec<String>, usize), String> {
