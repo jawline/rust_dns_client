@@ -20,13 +20,15 @@ pub fn print_response(buf: &[u8]) -> Result<(), String> {
 
     println!("Recv: {:?} {}", &header, current);
 
-    for _ in 0..header.questions {
+    for idx in 0..header.questions {
+        println!("Reading question {} / {}", idx, header.questions);
         let (question, nc) = Question::from(buf, current)?;
         current = nc;
         println!("Recv: {:?}", &question);
     }
 
-    for _ in 0..header.answers {
+    for idx in 0..header.answers {
+        println!("Reading answer {} / {}", idx, header.answers);
         let (answer, nc) = Answer::from(buf, current)?;
         current = nc;
         println!("Recv: {:?}", &answer);
@@ -49,7 +51,10 @@ fn response(buf: &mut [u8], maker: &Maker) -> std::io::Result<()> {
     let amt = maker.recv(buf)?;
     let msg_buf = &buf[0..amt];
 
-    print_response(msg_buf).unwrap();
+    if let Err(x) = print_response(msg_buf) {
+        println!("{}", x);
+    }
+
     Ok(())
 }
 
