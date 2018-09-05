@@ -1,7 +1,5 @@
 use std::str;
 
-const PTR_BITS: u16 = (1 << 14) | (1 << 15);
-
 pub fn extract_u16(data: &[u8], offset: usize) -> Result<u16, String> {
     if data.len() >= offset + 2 {
         Ok((data[offset + 1] as u16) + ((data[offset] as u16) << 8))
@@ -48,12 +46,18 @@ pub fn get_bit(v: u16, bit: u16) -> bool {
 
 pub fn extract_string_maybe_ptr(data: &[u8], current: usize) -> Result<(Vec<String>, usize), String> {
     
-    //Grab the first 16 bits of the answer to decide if its a ptr
-    let ptr = extract_u16(data, current)?;
+    const PTR_BITS: u8 = (1 << 6) | (1 << 7);
 
-    if ptr & PTR_BITS != 1 { //Names is a ptr
-        let start = ptr & !PTR_BITS;
+    //Grab the first 16 bits of the answer to decide if its a ptr
+    
+    if data[current] & PTR_BITS != 0 { //Names is a ptr
+        
+        let ptr = extract_u16(data, current)?;
+        let start = ptr & !(1 << 15 | 1 << 14);
+
+        println!("POINTER TO {} in {:?} / {:?} size {}", start, data, &data[current..], data.len());
         let (names, _) = extract_string(data, start as usize)?;
+        println!("Done extract {:?}", names);
         Ok((names, current + 2))
     } else { //names is grabbed with the extract_string function
         extract_string(data, current)

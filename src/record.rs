@@ -25,7 +25,9 @@ impl Record {
 
             A_CODE => if data.len() >= current + 4 {
                 Ok(Record::A(Ipv4Addr::new(data[current], data[current + 1], data[current + 2], data[current + 3])))
-            } else { Err("a record no data".to_string()) },
+            } else {
+                Err("a record no data".to_string())
+            },
 
             CNAME_CODE => {
                 let (name, _) = extract_string_maybe_ptr(data, current)?;
