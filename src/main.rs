@@ -63,6 +63,7 @@ fn map_str_to_class_code(s: &str) -> Option<u16> {
         "A" => Some(record::A_CODE),
         "NS" => Some(record::NS_CODE),
         "CNAME" => Some(record::CNAME_CODE),
+        "ANY" => Some(record::ANY_CODE),
         _ => None
     }
 }
