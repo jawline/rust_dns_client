@@ -44,53 +44,32 @@ pub fn get_bit(v: u16, bit: u16) -> bool {
     v & bit != 0
 }
 
-pub fn extract_string_maybe_ptr(data: &[u8], current: usize) -> Result<(Vec<String>, usize), String> {
-    
+pub fn extract_domain_name(data: &[u8], current: usize) -> Result<(Vec<String>, usize), String> {
     const PTR_BITS: u8 = (1 << 6) | (1 << 7);
+    let is_done = data[current] == 0;
 
-    //Grab the first 16 bits of the answer to decide if its a ptr
-    
-    if data[current] & PTR_BITS != 0 { //Names is a ptr
-        
-        let ptr = extract_u16(data, current)?;
-        let start = ptr & !(1 << 15 | 1 << 14);
+    if is_done {
+        Ok((Vec::new(), current + 1))
+    } else {
+        let is_ptr = PTR_BITS & data[current] != 0;
 
-        println!("POINTER TO {} in {:?} / {:?} size {}", start, data, &data[current..], data.len());
-        let (names, _) = extract_string(data, start as usize)?;
-        println!("Done extract {:?}", names);
-        Ok((names, current + 2))
-    } else { //names is grabbed with the extract_string function
-        extract_string(data, current)
-    }
-}
+        if is_ptr {
+            let ptr = extract_u16(data, current)? & !(1 << 15 | 1 << 14);
+            Ok((extract_domain_name(data, ptr as usize)?.0, current + 2))
+        } else {
+            let len = data[current];
+            let word = str::from_utf8(&data[current + 1..current + 1 + len as usize]);
+            
+            if let Err(e) = word {
+                return Err(e.to_string());
+            }
 
-pub fn extract_string(data: &[u8], current: usize) -> Result<(Vec<String>, usize), String> {
+            let word = word.unwrap().to_string();
 
-    if current >= data.len() {
-        return Err("no more data".to_string())
-    }
-
-    let mut words = Vec::new();
-    let mut current = current;
-
-    loop {
-
-        let len = data[current];
-        current += 1;
-
-        if len == 0 {
-            break;
+            let mut this_parts = vec![word];
+            let (next_parts, current) = extract_domain_name(data, current + 1 + len as usize)?;
+            this_parts.extend(next_parts);
+            Ok((this_parts, current))
         }
-
-        let word = str::from_utf8(&data[current..current + len as usize]);
-
-        if let Err(e) = word {
-            return Err(e.to_string());
-        }
-
-        words.push(word.unwrap().to_string());
-        current += len as usize;
     }
-    
-    Ok((words, current))
 }

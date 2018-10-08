@@ -12,10 +12,22 @@ pub const SRV_CODE: u16 = 0x21;
 pub const AAAA_CODE: u16 = 0x1C;
 pub const ANY_CODE: u16 = 0xFF;
 
+pub fn type_to_code(s: &str) -> Option<u16> {
+    match s {
+        "A" => Some(A_CODE),
+        "NS" => Some(NS_CODE),
+        "CNAME" => Some(CNAME_CODE),
+        "NS" => Some(NS_CODE),
+        "ANY" => Some(ANY_CODE),
+        _ => None
+    }
+}
+
 #[derive(Debug)]
 pub enum Record {
     A(Ipv4Addr),
-    CNAME(Vec<String>)
+    CNAME(Vec<String>),
+    NS(Vec<String>)
 }
 
 impl Record { 
@@ -29,8 +41,13 @@ impl Record {
                 Err("a record no data".to_string())
             },
 
+            NS_CODE => {
+                let (name, _) = extract_domain_name(data, current)?;
+                Ok(Record::NS(name))
+            },
+
             CNAME_CODE => {
-                let (name, _) = extract_string_maybe_ptr(data, current)?;
+                let (name, _) = extract_domain_name(data, current)?;
                 Ok(Record::CNAME(name))
             },
 

@@ -15,11 +15,18 @@ impl Answer {
 
     pub fn from(data: &[u8], current: usize) -> Result<(Answer, usize), String> {
 
-        let (names, current) = extract_string_maybe_ptr(data, current)?;
+        println!("Start answer {:?} {}", &data, current);
+
+        let (names, current) = extract_domain_name(data, current)?;
+
+        println!("Extract name");
+
         let type_code = extract_u16(data, current)?;
         let class_code = extract_u16(data, current + 2)?;
         let ttl = extract_u32(data, current + 4)?;
         let rdlength = extract_u16(data, current + 8)?;
+
+        println!("Record {} {} {} {} {:?}", type_code, class_code, ttl, rdlength, &data[current + 10..]);
         let record = Record::from(type_code, data, current + 10)?;
 
         Ok((Answer {

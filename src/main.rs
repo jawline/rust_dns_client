@@ -58,16 +58,6 @@ fn response(buf: &mut [u8], maker: &Maker) -> std::io::Result<()> {
     Ok(())
 }
 
-fn map_str_to_class_code(s: &str) -> Option<u16> {
-    match s {
-        "A" => Some(record::A_CODE),
-        "NS" => Some(record::NS_CODE),
-        "CNAME" => Some(record::CNAME_CODE),
-        "ANY" => Some(record::ANY_CODE),
-        _ => None
-    }
-}
-
 fn main() -> std::io::Result<()> {
 
     if std::env::args().len() != 4 {
@@ -78,7 +68,7 @@ fn main() -> std::io::Result<()> {
     let me = "0.0.0.0:0";
     let target_dns = format!("{}:53", std::env::args().nth(1).unwrap());
     let search_target = std::env::args().nth(2).unwrap();
-    let class_code = map_str_to_class_code(&std::env::args().nth(3).unwrap()).unwrap();
+    let class_code = record::type_to_code(&std::env::args().nth(3).unwrap()).unwrap();
 
     println!("DNS Lookup Utility");
     println!("Bind: {}", me);

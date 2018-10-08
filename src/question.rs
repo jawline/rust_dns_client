@@ -53,7 +53,7 @@ impl Question {
     }
 
     pub fn from(data: &[u8], current: usize) -> Result<(Question, usize), String> {
-        let (words, current) = extract_string(data, current)?;
+        let (words, current) = extract_domain_name(data, current)?;
         let type_code = extract_u16(data, current)?;
         let class_code = extract_u16(data, current + 2)?;
         
