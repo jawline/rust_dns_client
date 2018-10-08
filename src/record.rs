@@ -8,6 +8,7 @@ pub const SOA_CODE: u16 = 0x6;
 pub const WKS_CODE: u16 = 0xB;
 pub const PTR_CODE: u16 = 0xC;
 pub const MX_CODE: u16 = 0xF;
+pub const TXT_CODE: u16 = 0xA;
 pub const SRV_CODE: u16 = 0x21;
 pub const AAAA_CODE: u16 = 0x1C;
 pub const ANY_CODE: u16 = 0xFF;
@@ -18,6 +19,8 @@ pub fn type_to_code(s: &str) -> Option<u16> {
         "NS" => Some(NS_CODE),
         "CNAME" => Some(CNAME_CODE),
         "NS" => Some(NS_CODE),
+        "MX" => Some(MX_CODE),
+        "TXT" => Some(TXT_CODE),
         "ANY" => Some(ANY_CODE),
         _ => None
     }
@@ -27,7 +30,9 @@ pub fn type_to_code(s: &str) -> Option<u16> {
 pub enum Record {
     A(Ipv4Addr),
     CNAME(Vec<String>),
-    NS(Vec<String>)
+    NS(Vec<String>),
+    MX(u16, Vec<String>),
+    TXT(String)
 }
 
 impl Record { 
@@ -46,9 +51,20 @@ impl Record {
                 Ok(Record::NS(name))
             },
 
+            MX_CODE => {
+                let preference = extract_u16(data, current)?;
+                let (name, _) = extract_domain_name(data, current + 2)?;
+                Ok(Record::MX(preference, name))
+            },
+
             CNAME_CODE => {
                 let (name, _) = extract_domain_name(data, current)?;
                 Ok(Record::CNAME(name))
+            },
+
+            TXT_CODE => {
+                let (string, _) = extract_character_string(data, current)?;
+                Ok(Record::TXT(string))
             },
 
             _ => Err( format!("unknown type code {}", type_code) )

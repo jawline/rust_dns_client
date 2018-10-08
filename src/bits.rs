@@ -44,6 +44,18 @@ pub fn get_bit(v: u16, bit: u16) -> bool {
     v & bit != 0
 }
 
+pub fn extract_character_string(data: &[u8], current: usize) -> Result<(String, usize), String> {
+    let len = data[current] as usize;
+    let string = str::from_utf8(&data[current + 1..current + 1 + len]);
+
+    if let Err(e) = string {
+        return Err(e.to_string());
+    }
+
+    let string = string.unwrap().to_string();
+    Ok((string, current + 1 + len))
+}
+
 pub fn extract_domain_name(data: &[u8], current: usize) -> Result<(Vec<String>, usize), String> {
     const PTR_BITS: u8 = (1 << 6) | (1 << 7);
     let is_done = data[current] == 0;
